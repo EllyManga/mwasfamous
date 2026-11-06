@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>MWASFAMOUSE – Football predictions (demo)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#0a0a0b;--card:#141416;--line:#26262a;--gold:#d4af37;--green:#39ff88;--tx:#fff;--mut:#9a9aa2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.55 Barlow,system-ui,sans-serif}
+h1,h2,h3,.disp{font-family:'Barlow Condensed',Impact,sans-serif;font-weight:700;letter-spacing:.01em;margin:0}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:20;background:rgba(10,10,11,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:20px;height:64px}
+.logo{font-size:26px;color:var(--gold)}
+nav{display:flex;gap:4px;flex:1}nav a{padding:8px 12px;border-radius:8px;color:var(--mut);font-weight:500;font-size:15px}
+nav a:hover,nav a.on{color:#fff;background:#1c1c20}
+.btn{border:1px solid var(--line);background:transparent;color:#fff;padding:10px 18px;border-radius:8px;font-weight:600}
+.btn.gold{background:var(--gold);color:#111;border-color:var(--gold)}.btn.gold:hover{background:#e6c352}
+.btn.ghost:hover{border-color:var(--gold)}
+.burger{display:none;background:none;border:0;color:#fff;margin-left:auto}
+.hero{padding:72px 0 56px;border-bottom:1px solid var(--line);background:radial-gradient(60% 80% at 85% 0,#1d1a0d 0,transparent 70%)}
+.hero h1{font-size:clamp(40px,7vw,84px);line-height:.95;max-width:820px}
+.hero p{color:var(--mut);max-width:520px;font-size:18px;margin:20px 0 28px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.tick{background:#0f0f11;border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+.tick span{display:inline-flex;gap:8px;align-items:center;padding:12px 20px;border-right:1px solid var(--line);font-size:14px}
+.live{color:var(--green);font-weight:600}.live:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.25}}@media(prefers-reduced-motion:reduce){.live:before{animation:none}}
+section.s{padding:56px 0}h2{font-size:34px;margin-bottom:6px}.sub{color:var(--mut);margin:0 0 24px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.m{cursor:pointer;transition:border-color .15s}.m:hover{border-color:var(--gold)}
+.meta{display:flex;justify-content:space-between;color:var(--mut);font-size:13px;margin-bottom:12px}
+.tm{display:flex;align-items:center;gap:10px;margin:6px 0;font-weight:600}.tm b{margin-left:auto;font-size:20px}
+.cr{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 11px 'Barlow Condensed';color:#fff;border:2px solid rgba(255,255,255,.25)}
+.odds{font:700 28px 'Barlow Condensed';color:var(--gold)}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.won{color:var(--green);border-color:#1f6b43}.lost{color:#ff6b6b;border-color:#6b2a2a}.pend{color:var(--gold);border-color:#6b5a1f}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{background:var(--card);border:1px solid var(--line);color:var(--mut);padding:6px 14px;border-radius:99px;font-size:14px}
+.chip.on{color:#111;background:var(--gold);border-color:var(--gold)}
+.lock{filter:blur(5px);user-select:none;color:var(--mut);margin:12px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}.stats .odds{font-size:40px;color:#fff}
+.ad{border:1px dashed #4a4020;border-radius:12px;padding:28px;text-align:center;color:var(--mut);background:repeating-linear-gradient(45deg,#111,#111 10px,#131310 10px,#131310 20px)}
+.pkg.rec{border-color:var(--gold)}.pkg .odds{font-size:36px}
+table{width:100%;border-collapse:collapse}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:15px}th{color:var(--mut);font-weight:500}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;place-items:center;z-index:50;padding:20px}.modal.open{display:grid}
+.box{background:var(--card);border:1px solid var(--gold);border-radius:14px;max-width:440px;width:100%;padding:26px}
+input,select{width:100%;padding:11px 12px;margin:6px 0 14px;background:#0d0d0f;border:1px solid var(--line);border-radius:8px;color:#fff;font:inherit}
+label{font-size:14px;color:var(--mut)}
+.demo{background:#1c180a;color:var(--gold);font-size:13px;text-align:center;padding:6px}
+footer{border-top:1px solid var(--line);padding:40px 0;color:var(--mut);font-size:14px;margin-top:40px}
+footer .grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#042;padding:10px 18px;border-radius:8px;font-weight:600;display:none;z-index:60}
+@media(max-width:860px){nav{display:none;position:absolute;top:64px;left:0;right:0;background:#0f0f11;flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--line)}nav.open{display:flex}.burger{display:block}.hide-m{display:none}}
+</style></head><body>
+<div class="demo">Demonstration prototype. All fixtures, scores, odds and customers are sample data. MWASFAMOUSE sells prediction information and does not accept bets.</div>
+<header><div class="wrap bar">
+<a href="#/" class="logo disp">MWASFAMOUSE</a>
+<nav id="nav"><a href="#/">Home</a><a href="#/free">Free Odds</a><a href="#/premium">Premium Odds</a><a href="#/fixtures">Fixtures</a><a href="#/live">Live Scores</a><a href="#/results">Results</a><a href="#/advertise">Advertise With Us</a></nav>
+<button class="btn ghost hide-m" data-modal="login">Login</button><a class="btn gold hide-m" href="#/vip">Join VIP</a>
+<button class="burger" id="bg" aria-label="Menu"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+</div></header>
+<main id="app"></main>
+<footer><div class="wrap grid">
+<div><div class="logo disp">MWASFAMOUSE</div><p>Premium football predictions and information for Kenya.</p></div>
+<div><b style="color:#fff">Explore</b><br><a href="#/free">Free Odds</a><br><a href="#/premium">Premium Odds</a><br><a href="#/vip">VIP Packages</a><br><a href="#/advertise">Advertise</a></div>
+<div><b style="color:#fff">Contact</b><br>Nairobi, Kenya<br>hello@mwasfamouse.demo<br>Africa/Nairobi (EAT)</div>
+<div><b style="color:#fff">Responsible use</b><br>18+ only. Predictions are information, not guarantees. We do not accept bets. If gambling stops being fun, seek help. Terms and Privacy pages are placeholders in this demo.</div>
+</div></footer>
+<div class="modal" id="md"><div class="box" id="bx"></div></div><div class="toast" id="ts"></div>
+<script>
+const T={ars:['Arsenal','ARS','#c8202f'],che:['Chelsea','CHE','#034694'],liv:['Liverpool','LIV','#c8102e'],mci:['Man City','MCI','#6cabdd'],rma:['Real Madrid','RMA','#7a6a2a'],bar:['Barcelona','BAR','#a50044'],int:['Inter','INT','#0a4fa0'],mil:['AC Milan','MIL','#b3121b'],bay:['Bayern','BAY','#dc052d'],bvb:['Dortmund','BVB','#b8a000'],psg:['PSG','PSG','#004170'],lyo:['Lyon','LYO','#1b3c8a'],gor:['Gor Mahia','GOR','#1a7a3a'],afc:['AFC Leopards','AFC','#1d4fb3'],tus:['Tusker','TUS','#a0151a'],kcb:['KCB','KCB','#2b6e2f']};
+const F=[
+{id:1,c:'Premier League',h:'ars',a:'che',t:'17:30',s:'live',hs:1,as:1,min:"64'"},
+{id:2,c:'La Liga',h:'rma',a:'bar',t:'21:00',s:'live',hs:2,as:1,min:"38'"},
+{id:3,c:'Serie A',h:'int',a:'mil',t:'20:45',s:'up'},
+{id:4,c:'Bundesliga',h:'bay',a:'bvb',t:'19:30',s:'up'},
+{id:5,c:'Ligue 1',h:'psg',a:'lyo',t:'22:00',s:'up'},
+{id:6,c:'Premier League',h:'liv',a:'mci',t:'16:00',s:'ft',hs:2,as:2},
+{id:7,c:'Kenyan Premier League',h:'gor',a:'afc',t:'15:00',s:'ft',hs:1,as:0},
+{id:8,c:'Kenyan Premier League',h:'tus',a:'kcb',t:'15:00',s:'up'}];
+const COMPS=['All','Premier League','La Liga','Serie A','Bundesliga','Ligue 1','Kenyan Premier League'];
+const FREE=[
+{m:'Arsenal vs Chelsea',k:'Both Teams To Score',sel:'Yes',o:1.72,d:'today',cat:'Single',r:'pend'},
+{m:'Real Madrid vs Barcelona',k:'Over 2.5 Goals',sel:'Over',o:1.85,d:'today',cat:'Single',r:'pend'},
+{m:'Bayern vs Dortmund',k:'Match Result',sel:'Bayern win',o:1.60,d:'today',cat:'Single',r:'pend'},
+{m:'Gor Mahia vs AFC Leopards',k:'Double Chance',sel:'Gor Mahia or draw',o:1.30,d:'today',cat:'Single',r:'won'},
+{m:'Daily accumulator (4 picks)',k:'Combined',sel:'Four selections',o:5.38,d:'today',cat:'Accumulator',r:'pend'},
+{m:'Inter vs AC Milan',k:'Under 3.5 Goals',sel:'Under',o:1.45,d:'tomorrow',cat:'Single',r:'pend'},
+{m:'PSG vs Lyon',k:'Match Result',sel:'PSG win',o:1.55,d:'tomorrow',cat:'Single',r:'pend'},
+{m:'Tomorrow accumulator (3 picks)',k:'Combined',sel:'Three selections',o:3.90,d:'tomorrow',cat:'Accumulator',r:'pend'}];
+const PREM=[
+{ref:'VIP-2041',cat:'Safe 3 odds',n:3,o:3.12,pub:'08:00',exp:'14:00',p:150,legs:['Arsenal win','Over 1.5 Inter v Milan','PSG win']},
+{ref:'VIP-2042',cat:'Value 8 odds',n:5,o:8.45,pub:'08:30',exp:'16:00',p:250,legs:['Both score Real v Barca','Bayern -1','Over 2.5 Liverpool','Tusker or draw','Over 1.5 Lyon']},
+{ref:'VIP-2043',cat:'Weekend 20 odds',n:7,o:21.6,pub:'09:00',exp:'Sat 12:00',p:400,legs:['—']}];
+const PK=[['Daily Premium','KSh 100','24 hours'],['48-Hour Pass','KSh 180','2 days'],['Weekend Special','KSh 250','Fri–Sun'],['Weekly VIP','KSh 500','7 days',1],['Bi-weekly VIP','KSh 850','14 days'],['Monthly VIP','KSh 1,500','30 days',1]];
+const RES=[['12 Nov','Safe 3 odds',3.05,'won'],['11 Nov','Value 8 odds',8.2,'lost'],['10 Nov','Safe 3 odds',2.9,'won'],['09 Nov','Weekend 20 odds',19.4,'lost'],['08 Nov','Safe 3 odds',3.3,'won'],['07 Nov','Value 8 odds',7.9,'won']];
+const NEWS=[['Title race tightens as leaders drop points','Premier League'],['Kenyan Premier League: five things to watch this weekend','KPL'],['Champions League: tactical previews for the week','Europe']];
+const $=s=>document.querySelector(s);let st={f:'All',d:'today',cat:'All'};
+const ic=(k,c)=>`<span class="cr" style="background:${c}">${k}</span>`;
+const tm=(id,sc)=>{const t=T[id];return `<div class="tm">${ic(t[1],t[2])}${t[0]}${sc!==undefined?`<b>${sc}</b>`:''}</div>`};
+const mc=f=>`<div class="card m" data-m="${f.id}"><div class="meta"><span>${f.c}</span>${f.s==='live'?`<span class="live">LIVE ${f.min}</span>`:f.s==='ft'?'<span>Full time</span>':`<span>${f.t} EAT</span>`}</div>${tm(f.h,f.s==='up'?undefined:f.hs)}${tm(f.a,f.s==='up'?undefined:f.as)}<div class="meta" style="margin:10px 0 0"><span>Match details</span></div></div>`;
+const pc=p=>`<div class="card"><div class="meta"><span>${p.m}</span><span class="tag ${p.r}">${p.r==='won'?'Won':p.r==='lost'?'Lost':'Pending'}</span></div><div>${p.k}: <b>${p.sel}</b></div><div class="odds">${p.o.toFixed(2)}</div></div>`;
+const lk=p=>`<div class="card" style="border-color:#4a4020"><div class="meta"><span class="tag pend">VIP</span><span>${p.ref}</span></div><h3>${p.cat}</h3><div class="meta"><span>${p.n} selections</span><span>Published ${p.pub} · Expires ${p.exp}</span></div><div class="lock" aria-hidden="true">Selection hidden for non-members</div><div class="row" style="justify-content:space-between;align-items:center"><div class="odds">${p.o.toFixed(2)}</div><button class="btn gold" data-p="${p.ref}">Unlock · KSh ${p.p}</button></div></div>`;
+const pk=(p,i)=>`<div class="card pkg ${p[3]?'rec':''}">${p[3]?'<span class="tag pend">Popular choice</span>':''}<h3 style="margin-top:6px">${p[0]}</h3><div class="odds">${p[1]}</div><p style="color:var(--mut)">${p[2]} access to all premium tickets</p><button class="btn ${p[3]?'gold':''}" style="width:100%" data-k="${i}">Choose package</button></div>`;
+const ad=(t)=>`<div class="ad"><b>${t}</b><br>Sponsored placement · banner artwork goes here</div>`;
+const sec=(t,s,b)=>`<section class="s"><div class="wrap"><h2>${t}</h2><p class="sub">${s||''}</p>${b}</div></section>`;
+const chips=(arr,k)=>`<div class="chips">${arr.map(x=>`<button class="chip ${st[k]===x?'on':''}" data-f="${k}|${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</div>`;
+const stats=`<div class="stats"><div class="card"><div class="odds">68%</div>Ticket win rate (sample)</div><div class="card"><div class="odds">412</div>Tickets published (sample)</div><div class="card"><div class="odds">3.4</div>Average odds (sample)</div></div>`;
+const resTbl=`<div class="card"><table><tr><th>Date</th><th>Ticket</th><th>Odds</th><th>Result</th></tr>${RES.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].toFixed(2)}</td><td><span class="tag ${r[3]}">${r[3]==='won'?'Won':'Lost'}</span></td></tr>`).join('')}</table></div><p class="sub" style="margin-top:12px">Losses are published alongside wins. Past performance does not guarantee future outcomes.</p>`;
+const P={
+'/':()=>`<div class="hero"><div class="wrap"><h1>FOOTBALL INSIGHTS. PREMIUM PREDICTIONS. BETTER INFORMED DECISIONS.</h1><p>Stay ahead of the game with daily football predictions, match insights and exclusive premium selections.</p><div class="row"><a class="btn gold" href="#/premium">Explore Premium Odds</a><a class="btn ghost" href="#/free">View Free Predictions</a></div></div></div>
+<div class="tick">${F.filter(f=>f.s!=='up').map(f=>`<span><span class="${f.s==='live'?'live':''}">${f.s==='live'?f.min:'FT'}</span>${T[f.h][1]} ${f.hs}–${f.as} ${T[f.a][1]}</span>`).join('')}</div>`+
+sec("Today’s fixtures",'Tap a match for lineups, form and stats.',`<div class="grid">${F.slice(0,6).map(mc).join('')}</div>`)+
+sec('Free daily predictions','Updated every morning, Nairobi time.',`<div class="grid">${FREE.filter(p=>p.d==='today').slice(0,3).map(pc).join('')}</div>`)+
+sec('Premium predictions','Selections unlock after purchase.',`<div class="grid">${PREM.map(lk).join('')}</div>`)+
+`<div class="wrap">${ad('Homepage banner · 970×250')}</div>`+
+sec('Membership packages','From one day to a full month.',`<div class="grid">${PK.map(pk).join('')}</div>`)+
+sec('Results and performance','Every ticket, win or loss. Sample data.',stats+'<div style="height:16px"></div>'+resTbl)+
+sec('Latest football news','Sample editorial cards.',`<div class="grid">${NEWS.map(n=>`<div class="card"><span class="tag">${n[1]}</span><h3 style="margin-top:10px">${n[0]}</h3><p class="sub">Sample article for demonstration.</p></div>`).join('')}</div>`),
+'/free':()=>sec('Free odds','Free selections for today and tomorrow.',chips(['today','tomorrow'],'d')+chips(['All','Single','Accumulator'],'cat')+(()=>{const l=FREE.filter(p=>p.d===st.d&&(st.cat==='All'||p.cat===st.cat));return l.length?`<div class="grid">${l.map(pc).join('')}</div>`:'<div class="card">No predictions match these filters. Try another date or category.</div>'})()),
+'/premium':()=>sec('Premium odds','Buy a single ticket or join VIP for unlimited access.',`<div class="grid">${PREM.map(lk).join('')}</div><div class="card" style="margin-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px"><div><h3>Want every ticket?</h3><span class="sub">VIP membership starts at KSh 100.</span></div><a class="btn gold" href="#/vip">Subscribe to VIP</a></div>`),
+'/fixtures':()=>sec('Football centre','Fixtures, live matches and results by competition.',chips(COMPS,'f')+`<div class="grid">${F.filter(f=>st.f==='All'||f.c===st.f).map(mc).join('')||''}</div>`+(F.some(f=>st.f==='All'||f.c===st.f)?'':'<div class="card">No fixtures for this competition today.</div>')),
+'/live':()=>sec('Live scores','Sample live data.',`<div class="grid">${F.filter(f=>f.s==='live').map(mc).join('')}</div>`),
+'/results':()=>sec('Results','Transparent ticket history. Sample data.',stats+'<div style="height:16px"></div>'+resTbl),
+'/vip':()=>sec('Join VIP','Pick a package. Checkout is a demonstration only.',`<div class="grid">${PK.map(pk).join('')}</div>`),
+'/advertise':()=>`<div class="hero"><div class="wrap"><h1>PUT YOUR BRAND IN FRONT OF PASSIONATE FOOTBALL FANS.</h1><p>Reach Kenyan fans on match days, in premium ticket views and on mobile.</p></div></div>`+sec('Advertising packages','',`<div class="grid">${[['Homepage banner','970×250 top placement'],['Premium ticket sponsorship','Your brand on VIP tickets'],['Sports Centre placement','Beside fixtures and tables'],['Sponsored content','Editorial feature'],['Mobile banner','320×100 sticky']].map(x=>`<div class="card"><h3>${x[0]}</h3><p class="sub">${x[1]}</p></div>`).join('')}</div>`)+sec('Send an enquiry','Gambling-related campaigns are subject to applicable regulatory approval.',`<form class="card" style="max-width:520px" data-t="Enquiry received (demo). No data was sent."><label>Company<input required></label><label>Email<input type="email" required></label><label>Package<select><option>Homepage banner</option><option>Ticket sponsorship</option><option>Sponsored content</option></select></label><button class="btn gold">Send enquiry</button></form>`)};
+function M(id){const f=F.find(x=>x.id==id),H=T[f.h],A=T[f.a];$('#bx').innerHTML=`<div class="meta"><span>${f.c}</span><span>${f.s==='live'?'Live '+f.min:f.s==='ft'?'Full time':f.t+' EAT'}</span></div>${tm(f.h,f.hs)}${tm(f.a,f.as)}<h3 style="margin:14px 0 6px">Form</h3><p>${H[0]}: W W D W L · ${A[0]}: W D W L W</p><h3 style="margin:14px 0 6px">Head-to-head</h3><p>Last 5: ${H[1]} 2 wins, 2 draws, ${A[1]} 1 win</p><h3 style="margin:14px 0 6px">Lineups</h3><p>${f.s==='up'?'Lineups Not Yet Announced':'4-3-3 vs 4-2-3-1 (sample)'}</p><p class="tag" style="display:inline-block">Demonstration data</p><div style="margin-top:16px"><button class="btn" data-x>Close</button></div>`;open_()}
+function open_(){$('#md').classList.add('open')}function close_(){$('#md').classList.remove('open')}
+function toast(t){const e=$('#ts');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2600)}
+function route(){const h=location.hash.slice(1)||'/';$('#app').innerHTML=(P[h]||P['/'])();document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));$('#nav').classList.remove('open');scrollTo(0,0)}
+function pay(title,price){$('#bx').innerHTML=`<h3>${title}</h3><p class="sub">${price} · demonstration checkout, no payment is taken.</p><label>M-Pesa number<input value="07XX XXX XXX"></label><button class="btn gold" style="width:100%" data-pay>Confirm demo payment</button><div style="margin-top:12px"><button class="btn" data-x>Cancel</button></div>`;open_()}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-m],[data-p],[data-k],[data-f],[data-modal],[data-x],[data-pay]');if(!t)return;
+if(t.dataset.m)M(t.dataset.m);
+else if(t.dataset.p){const p=PREM.find(x=>x.ref===t.dataset.p);pay('Unlock '+p.ref,'KSh '+p.p)}
+else if(t.dataset.k){const p=PK[t.dataset.k];pay(p[0],p[1])}
+else if(t.dataset.f){const[k,v]=t.dataset.f.split('|');st[k]=v;route()}
+else if(t.dataset.modal){$('#bx').innerHTML=`<h3>Login</h3><p class="sub">Demo only.</p><label>Email<input type="email" value="mwangi@example.com"></label><label>Password<input type="password" value="demo1234"></label><button class="btn gold" style="width:100%" data-pay>Log in (demo)</button><div style="margin-top:12px"><button class="btn" data-x>Close</button></div>`;open_()}
+else if(t.dataset.x!==undefined)close_();
+else if(t.dataset.pay!==undefined){close_();toast('Demo complete. No real transaction.')}});
+$('#md').addEventListener('click',e=>{if(e.target.id==='md')close_()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close_()});
+document.addEventListener('submit',e=>{e.preventDefault();toast(e.target.dataset.t||'Done (demo)');e.target.reset()});
+$('#bg').onclick=()=>$('#nav').classList.toggle('open');
+addEventListener('hashchange',route);route();
+</script></body></html>
